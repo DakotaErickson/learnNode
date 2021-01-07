@@ -2,17 +2,16 @@ const chalk = require('chalk');
 const fs = require('fs');
 
 
-const getNotes = function () {
+const getNotes = () => {
     return 'Your notes...';
-}
+} 
 
-const addNote = function (title, body) { // load the existing notes from notes.json
+// load the existing notes from notes.json
+const addNote = (title, body) => { 
     const notes = loadNotes();
 
     // check existing notes to ensure we aren't creating a duplicate title
-    const duplicateNotes = notes.filter(function (note) {
-        return note.title === title;
-    })
+    const duplicateNotes = notes.filter((note) => note.title === title);
     if (duplicateNotes.length === 0) { // add the new note
         notes.push({title: title, body: body});
 
@@ -25,13 +24,13 @@ const addNote = function (title, body) { // load the existing notes from notes.j
 
 
 }
-
-const saveNotes = function (notes) { // convert the javscript object to JSON and write the data
+// convert the javscript object to JSON and write the data
+const saveNotes = (notes) => { 
     const dataJSON = JSON.stringify(notes);
     fs.writeFileSync('notes.json', dataJSON);
 }
 
-const loadNotes = function () { 
+const loadNotes = () => { 
     // try catch block to ensure that if notes.json doesn't exist we can create it
     try {
         const dataBuffer = fs.readFileSync('notes.json');
@@ -42,18 +41,14 @@ const loadNotes = function () {
     }
 }
 
-const removeNote = function (title) { // load the existing notes from the file
+const removeNote = (title) => { // load the existing notes from the file
     const notes = loadNotes();
 
     // filter out any notes with the matching title
-    const notesToKeep = notes.filter(function (note) {
-        return note.title !== title;
-    })
+    const notesToKeep = notes.filter((note) =>note.title !== title);
+
     if (notesToKeep.length < notes.length) {
-
         console.log(chalk.green('Note removed!'));
-
-        // save the new list of notes without the matching title
         saveNotes(notesToKeep);
     } else {
         console.log(chalk.red('No note found!'));

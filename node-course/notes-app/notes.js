@@ -1,18 +1,14 @@
 const chalk = require('chalk');
 const fs = require('fs');
 
-
-const getNotes = () => {
-    return 'Your notes...';
-} 
-
 // load the existing notes from notes.json
 const addNote = (title, body) => { 
     const notes = loadNotes();
 
     // check existing notes to ensure we aren't creating a duplicate title
-    const duplicateNotes = notes.filter((note) => note.title === title);
-    if (duplicateNotes.length === 0) { // add the new note
+    const duplicateNote = notes.find(note => note.title === title);
+
+    if (!duplicateNote) { // add the new note
         notes.push({title: title, body: body});
 
         // save the notes
@@ -21,11 +17,35 @@ const addNote = (title, body) => {
     } else {
         console.log(chalk.red('Note title already taken.'));
     }
-
-
 }
+
+const listNotes = () => {
+    console.log(chalk.magenta.bold('Your notes:'));
+
+    const notes = loadNotes();
+    notes.forEach(note => {
+        console.log(note.title);
+    });
+}
+
+const readNote = title => {
+    // load in the notes
+    const notes = loadNotes();
+
+    // find the note with the matching title if it exists
+    const note = notes.find(note => note.title === title);
+
+    if (note){ // print the body if it exists
+        console.log(chalk.blue.bold(note.title));
+        console.log(note.body);
+    } else {
+        console.log(chalk.red('Note doesn\'t exist'));
+    }
+    
+}
+
 // convert the javscript object to JSON and write the data
-const saveNotes = (notes) => { 
+const saveNotes = notes => { 
     const dataJSON = JSON.stringify(notes);
     fs.writeFileSync('notes.json', dataJSON);
 }
@@ -41,11 +61,11 @@ const loadNotes = () => {
     }
 }
 
-const removeNote = (title) => { // load the existing notes from the file
+const removeNote = title => { 
     const notes = loadNotes();
 
     // filter out any notes with the matching title
-    const notesToKeep = notes.filter((note) =>note.title !== title);
+    const notesToKeep = notes.filter(note => note.title !== title);
 
     if (notesToKeep.length < notes.length) {
         console.log(chalk.green('Note removed!'));
@@ -57,7 +77,8 @@ const removeNote = (title) => { // load the existing notes from the file
 }
 
 module.exports = {
-    getNotes: getNotes,
     addNote: addNote,
-    removeNote: removeNote
+    removeNote: removeNote,
+    listNotes: listNotes,
+    readNote: readNote
 };

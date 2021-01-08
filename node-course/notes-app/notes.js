@@ -11,7 +11,6 @@ const addNote = (title, body) => {
     if (!duplicateNote) { // add the new note
         notes.push({title: title, body: body});
 
-        // save the notes
         saveNotes(notes);
         console.log(chalk.green('New note added.'));
     } else {

@@ -11,19 +11,19 @@ const weatherApiKey = keyJson['weather'];
 const forecast = (longitude, latitude, callback) => {
     const url = 'http://api.weatherstack.com/current?access_key=' + weatherApiKey + '&units=f&query=' + latitude + ',' + longitude;
 
-    request({url: url, json: true}, (error, response) => {
-        if (error) {
+    request({
+        url,
+        json: true
+    }, (error, { body }) => {
+        if (error) { // low level error like inability to connect to the API
             callback('Unable to connect to weather service.', undefined);
-        } else if (response.body.error) {
+        } else if (body.error) { // error from a malformed response
             callback('Unable to find location. Try another search.', undefined);
-        } else {
-            callback(undefined, {
-                description: response.body.current.weather_descriptions[0],
-                temperature: response.body.current.temperature,
-                feelsLike: response.body.current.feelslike
-            })
+        } else { // successful API call with valid response
+            callback(undefined, 'Weather description: ' + body.current.weather_descriptions[0].toLowerCase() + '. The temperature is ' + 
+                        body.current.temperature + '\u00B0F and the feels like temperature is ' + body.current.feelslike + '\u00B0F.')
         }
     })
-}
+};
 
 module.exports = forecast;

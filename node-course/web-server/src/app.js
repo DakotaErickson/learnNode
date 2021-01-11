@@ -1,6 +1,8 @@
 const path = require('path');
 const express = require('express');
 const hbs = require('hbs');
+const geocode = require('./utils/geocode');
+const forecast = require('./utils/forecast');
 
 const app = express();
 
@@ -19,7 +21,7 @@ app.use(express.static(publicDirectoryPath));
 
 // set up a route for the landing page
 app.get('', (req, res) => {
-    res.render('index',  {
+    res.render('index', {
         title: 'Weather App',
         name: 'Dakota Erickson'
     });
@@ -42,8 +44,31 @@ app.get('/help', (req, res) => {
     });
 });
 
+
 app.get('/weather', (req, res) => {
-    res.send({forecast: '30 degrees', string: 'it is cold'});
+    // ensure the address term is provided
+    if (!req.query.address) {
+        return res.send({
+            error: 'Address must be provided.'
+        });
+    }
+
+    geocode(req.query.address, (error, {longitute, latitude, location} = {}) => {
+        if (error) {
+            return res.send({ error });
+        }
+        forecast(longitute, latitude, (error, forecastData) => {
+            if (error) {
+                return res.send('error', { error });
+            }
+            res.send({
+                location,
+                forecast: forecastData,
+                address: req.query.address
+            })
+        });
+});
+    
 });
 
 

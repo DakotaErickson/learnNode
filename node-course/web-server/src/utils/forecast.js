@@ -11,7 +11,7 @@ const keyJson = JSON.parse(data);
 const weatherApiKey = keyJson['weather'];
 
 
-const forecast = (longitude, latitude, callback) => {
+const forecast = (latitude, longitude, callback) => {
     const url = 'http://api.weatherstack.com/current?access_key=' + weatherApiKey + '&units=f&query=' + latitude + ',' + longitude;
 
     request({

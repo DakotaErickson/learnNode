@@ -1,4 +1,4 @@
-// CRUD create, read, update, delete
+// CRUD create read, update, delete
 
 // const mongodb = require('mongodb');
 
@@ -24,37 +24,29 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     
     const db = client.db(databaseName);
 
-    // db.collection('users').findOne({
-    //     _id: new ObjectID("5fff4be5f1563312b155f19f")
-    // }, (error, user) => {
-    //     if (error) {
-    //         return console.log('Unable to find document.');
+    // db.collection('users').updateOne({
+    //     _id: new ObjectID("5fff25abae7fe50b65ba3684")
+    // }, {
+    //     $inc: {
+    //         age: 1
     //     }
-    //     console.log(user);
+    // }).then((result) => {
+    //     console.log(result);
+    // }).catch((error) => {
+    //     console.log(error);
     // })
 
-    // db.collection('users').find({ name: 'Dakota'}).toArray((error, users) => {
-    //     console.log(users);
-    // })
-
-    // db.collection('users').find({ name: 'Dakota'}).count((error, count) => {
-    //     console.log(count);
-    // })
-
-    db.collection('tasks').findOne( {
-        _id: new ObjectID("5fff47adc1096a118965a051")
-    }, (error, task) => {
-        if (error) {
-            return console.log('Unable to find document.');
+    // promise to match all documents in tasks with completed: false and change the status to true
+    // log the matched count if successful or log the error if false
+    db.collection('tasks').updateMany({
+        completed: false
+    }, {
+        $set: {
+            completed: true
         }
-        console.log(task);
+    }).then((result) => {
+        console.log(result.matchedCount);
+    }).catch((error) => {
+        console.log(error);
     })
-
-    db.collection('tasks').find({completed: false}).toArray((error, tasks) => {
-        if (error) {
-            return console.log('Unable to find documents.');
-        }
-        console.log(tasks);
-    })
-
 });

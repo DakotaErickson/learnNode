@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "upper-case": "^2.0.2",
+    "uppercase": "^2.0.0-beta.20"
+  }
+}

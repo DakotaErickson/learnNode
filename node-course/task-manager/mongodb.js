@@ -24,28 +24,10 @@ MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: 
     
     const db = client.db(databaseName);
 
-    // db.collection('users').updateOne({
-    //     _id: new ObjectID("5fff25abae7fe50b65ba3684")
-    // }, {
-    //     $inc: {
-    //         age: 1
-    //     }
-    // }).then((result) => {
-    //     console.log(result);
-    // }).catch((error) => {
-    //     console.log(error);
-    // })
-
-    // promise to match all documents in tasks with completed: false and change the status to true
-    // log the matched count if successful or log the error if false
-    db.collection('tasks').updateMany({
-        completed: false
-    }, {
-        $set: {
-            completed: true
-        }
+    db.collection('users').deleteOne( {
+        name: 'Henry'
     }).then((result) => {
-        console.log(result.matchedCount);
+        console.log(result);
     }).catch((error) => {
         console.log(error);
     })

@@ -60,7 +60,7 @@ app.post('/tasks', async (req, res) => {
         await task.save();
         res.status(201).send(task);
     } catch (e) {
-        res.status(500).send();
+        res.status(400).send(e);
     }
 })
 
@@ -68,8 +68,8 @@ app.post('/tasks', async (req, res) => {
 app.get('/tasks', async (req, res) => {
     try{
         const tasks = await Task.find({});
-        res.status(200).send(tasks);
-    }catch (e) {
+        res.send(tasks);
+    } catch (e) {
         res.status(500).send();
     }
 });

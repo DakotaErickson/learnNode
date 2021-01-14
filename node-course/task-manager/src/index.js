@@ -32,6 +32,52 @@ app.post('/tasks', (req, res) => {
     })
 })
 
+// endpoint for fetching all users in the database
+app.get('/users', (req, res) => {
+    User.find({}).then((users) => {
+        res.send(users);
+    }).catch( e => {
+        res.status(500).send();
+    })
+})
+
+// endpoint for finding a user by id
+app.get('/users/:id', (req, res) => {
+    User.findById(req.params.id).then( user => {
+        if (!user){ // the request was valid but the requested user was not in the database
+            return res.status(404).send();
+        }
+
+        res.send(user);
+
+    }).catch( e => { // server error
+        res.status(500).send();
+    });
+    
+})
+
+// endpoint for returning all tasks in the database
+app.get('/tasks', (req, res) => {
+    Task.find({}).then(tasks => {
+        res.send(tasks);
+    }).catch( e => {
+        res.status(500).send();
+    });
+});
+
+// endpoint for returning a task by ID
+app.get('/tasks/:id', (req, res) => {
+    Task.findById(req.params.id).then((task) => {
+        if (!task) {
+            return res.status(404).send();
+        }
+        res.send(task);
+    }).catch( e => {
+        res.status(500).send();
+    });
+
+})
+
 app.listen(port, () => {
     console.log('Server is listening on port: ' + port);
 })

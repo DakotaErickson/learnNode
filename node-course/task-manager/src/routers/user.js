@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../models/user.js');
 const router = new express.Router();
 
-
 // create new
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
@@ -38,6 +37,7 @@ router.get('/users/:id', async (req, res) => {
     }
 })
 
+// update user
 router.patch('/users/:id', async (req, res) => {
     // check that the requested updates are valid and return 400 if they aren't
     const updates = Object.keys(req.body);
@@ -50,7 +50,9 @@ router.patch('/users/:id', async (req, res) => {
     
     // if the requested updates are valid then try to make the change
     try {
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true});
+        const user = await User.findById(req.params.id);
+        updates.forEach(update => user[update] = req.body[update]);
+        await user.save();
 
         if (!user) {
             return res.status(404).send();

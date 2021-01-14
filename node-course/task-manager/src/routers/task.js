@@ -38,6 +38,7 @@ router.get('/tasks/:id', async (req, res) => {
 
 })
 
+// update task
 router.patch('/tasks/:id', async (req, res) => {
     // check that the requested updates are valid and return 400 if they aren't
     const updates = Object.keys(req.body);
@@ -50,7 +51,9 @@ router.patch('/tasks/:id', async (req, res) => {
     
     // if the requested updates are valid then try to make the change
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true});
+        const task = await Task.findById(req.params.id);
+        updates.forEach(update => task[update] = req.body[update]);
+        await task.save()
 
         if (!task) {
             return res.status(404).send();

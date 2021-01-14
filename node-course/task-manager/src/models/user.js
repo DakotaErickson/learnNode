@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -20,6 +21,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
         trim: true,
         lowercase: true,
         validate(value) {
@@ -38,19 +40,60 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Password cannot contain `password`');
             }
         }
-
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 })
 
+// hash the users password before storing
 userSchema.pre('save', async function (next) {
     const user = this;
 
-    if (user.isModified('password')) { // hash the users password before storing
+    if (user.isModified('password')) { 
         user.password = await bcrypt.hash(user.password, 8);
     }
 
     next();
 })
+
+userSchema.methods.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user.id.toString() }, 'mysecretvalueisthis')
+
+    user.tokens = user.tokens.concat({ token });
+    await user.save();
+    return token;
+}
+
+userSchema.methods.toJSON = function () {
+    // strip away information that shouldn't be returned to the user
+    const user = this;
+    const userObject = user.toObject();
+    delete userObject.password;
+    delete userObject.tokens;
+
+    return userObject;
+}
+
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new Error('Unable to login');
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+        throw new Error('Unable to login');
+    }
+
+    return user;
+}
 
 const User = mongoose.model('User', userSchema);
 

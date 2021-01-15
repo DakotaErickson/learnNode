@@ -49,6 +49,12 @@ const userSchema = new mongoose.Schema({
     }]
 })
 
+userSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'author'
+})
+
 // hash the users password before storing
 userSchema.pre('save', async function (next) {
     const user = this;
